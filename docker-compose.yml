@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+      EXTERNAL_API_URL: "https://jsonplaceholder.typicode.com/posts"
+      EXTERNAL_API_KEY: "dummy_key"
+      CSV_PATH: /data/input.csv
+      RSS_URL: "https://hnrss.org/frontpage"
+      ETL_INTERVAL_MINUTES: "10"
+    volumes:
+      - ./data:/data
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
